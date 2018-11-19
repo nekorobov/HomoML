@@ -1,55 +1,18 @@
-from fixed_float import FixedHomoFloat
 import numpy as np
 
-a = FixedHomoFloat(-128, k=0)
-b = FixedHomoFloat(100, k=0)
+from fixed_float import FixedHomoFloat, make_array
+from ml_lib import matmul
 
-c = a + b
-print(c.get_value())
-c = c - a
-print(c.get_value())
-
-
-c = a - b
-
-print(c.get_value())
-
-c = a * b
-
-print(c.get_value())
-
-c = a / b
-
-print(c.get_value())
-
-print(a > b)
-print(a <= b)
-print(a == b)
-
-arr1 = np.array([
-    [FixedHomoFloat(1), FixedHomoFloat(0)],
-    [FixedHomoFloat(0), FixedHomoFloat(1)],
+arr1 = make_array([
+    [1, 0],
+    [0, 1]
 ])
-arr2 = np.array([
-    [FixedHomoFloat(1), FixedHomoFloat(0)],
-    [FixedHomoFloat(0), FixedHomoFloat(1)],
-])
+arr2 = arr1.copy()
 
-def matmul(lhs, rhs):
-    assert lhs.shape[1] == rhs.shape[0]
-
-    output_matrix = []
-
-    for i in range(lhs.shape[0]):
-        output_matrix.append([])
-        for j in range(rhs.shape[1]):
-            output_matrix[i].append(FixedHomoFloat(0))
-            for k in range(lhs.shape[1]):
-                output_matrix[i][j] += lhs[i, k] * rhs[k, j]
-
-    return output_matrix
-
-print(matmul(arr1, arr2))
-
-print(-1 * arr1)
-print(1 / arr1)
+assert np.all(arr1 == arr2)
+assert np.all(matmul(arr1, arr2) == arr1)
+assert np.all(arr1 * arr2 == arr1)
+assert np.all(2 * (arr1 + arr1[:, [1, 0]]) - 3 / (arr2 + arr2[:, [1, 0]]) == -(arr1 + arr1[:, [1, 0]]))
+# assert np.all((-3.5 * arr1 * 2 == 7 * arr1))
+assert np.all(arr1 >= arr2)
+assert np.all(2 * (arr1 + arr1[:, [1, 0]]) > arr2)
