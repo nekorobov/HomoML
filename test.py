@@ -14,7 +14,7 @@ assert np.all(arr1 == arr2)
 assert np.all(matmul(arr1, arr2) == arr1)
 assert np.all(arr1 * arr2 == arr1)
 assert np.all(2 * (arr1 + arr1[:, [1, 0]]) - 3 / (arr2 + arr2[:, [1, 0]]) == -(arr1 + arr1[:, [1, 0]]))
-# assert np.all(-3.5 * arr1 * 2 == -7 * arr1)
+assert np.all(-3.5 * arr1 * 2 == -7 * arr1)
 assert np.all(arr1 >= arr2)
 assert np.all(2 * (arr1 + arr1[:, [1, 0]]) > arr2)
 
