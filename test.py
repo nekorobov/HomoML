@@ -1,12 +1,14 @@
 from fixed_float import FixedHomoFloat
 import numpy as np
 
-a = FixedHomoFloat(-128, k=1)
+a = FixedHomoFloat(-128, k=0)
 b = FixedHomoFloat(100, k=0)
 
 c = a + b
-
 print(c.get_value())
+c = c - a
+print(c.get_value())
+
 
 c = a - b
 

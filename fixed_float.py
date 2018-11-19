@@ -88,10 +88,6 @@ class FixedHomoFloat:
 				if self.k + diff_k < self.max_k and self.k + diff_k >= 0:
 					k1 = self.k + diff_k
 					M1 = hec.add(M1, other.M)
-		elif is_builtin(other):
-			M1 = hee.encrypttopoly(int(other * (10 ** self.k)), self.__key)
-			M1 = hec.add(self.M, M1)
-			k1 = self.k
 		else:
 			raise TypeError('Unknown type for addition')
 		return FixedHomoFloat(0, k=k1, M=M1, key=self.__key)
@@ -116,17 +112,13 @@ class FixedHomoFloat:
 			M1 = hee.encrypttopoly(int((10 ** diff_k)), self.__key)
 			if not neg:
 				M1 = hec.mul(other.M, M1)
-				M1 = hec.sub(M1, self.M)
+				M1 = hec.sub(self.M, M1)
 				k1 = self.k
 			else:
 				M1 = hec.mul(self.M, M1)
 				if self.k + diff_k < self.max_k and self.k + diff_k >= 0:
 					M1 = hec.sub(M1, other.M)
 					k1 = self.k + diff_k
-		elif is_builtin(other):
-			M1 = hee.encrypttopoly(int(other * (10 ** self.k)), self.__key)
-			M1 = hec.sub(self.M, M1)
-			k1 = self.k
 		else:
 			raise TypeError('Unknown type for substraction')
 		return FixedHomoFloat(0, k=k1, M=M1, key=self.__key)
