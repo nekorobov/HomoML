@@ -42,6 +42,10 @@ class FixedHomoFloat:
             if self.k + other.k < self.max_k and self.k + other.k >= 0:
                 M1 = hec.mul(self.M, other.M)
                 k1 = self.k + other.k
+        elif is_builtin(other):
+            M1 = hee.encrypttopoly(int(other * (10 ** self.k)), self.__key)
+            M1 = hec.mul(self.M, M1)
+            k1 = self.k * 2
         else:
             raise TypeError('Unknown type for multiplication')
         return FixedHomoFloat(0, k=k1, M=M1, key=self.__key)
