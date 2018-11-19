@@ -1,6 +1,7 @@
 import numpy as np
-from sklearn.base import BaseEstimator, ClassifierMixin
 
+from sklearn.base import BaseEstimator, ClassifierMixin
+from tqdm import tqdm
 from fixed_float import FixedHomoFloat, make_array
 
 
@@ -9,14 +10,15 @@ def matmul(lhs, rhs):
 
     output_matrix = []
 
-    for i in range(lhs.shape[0]):
+    for i in tqdm(range(lhs.shape[0])):
         output_matrix.append([])
         for j in range(rhs.shape[1]):
             output_matrix[i].append(FixedHomoFloat(0))
             for k in range(lhs.shape[1]):
                 output_matrix[i][j] += lhs[i, k] * rhs[k, j]
+    print()
 
-    return output_matrix
+    return np.array(output_matrix)
 
 
 class MatrixWrapper:
@@ -31,8 +33,8 @@ class MatrixWrapper:
         j = 0
         while j < len(self.a[0]):
             for i in range(j + 1, len(self.a)):
-                pivot = -1 * (self.a[i][j] / self.a[j][j])
-                self.a[i] = (self.a[j] * pivot) + self.a[i]
+                pivot = self.a[i][j] / self.a[j][j]
+                self.a[i] = self.a[i] - np.array([pivot] * self.a[j].shape[0]) * self.a[j]
                 self.L[i][j] = -pivot
             j = j + 1
 
@@ -63,7 +65,7 @@ class MatrixWrapper:
     def invert(self):
         size = self.a.shape[0]
         inv = make_array(np.eye(size, size))
-        for i in range(0, size):
+        for i in tqdm(range(0, size)):
             self.equation_L(inv[i])
             self.inv += [self.equation_U()]
         self.inv = np.array(self.inv).T
@@ -71,17 +73,22 @@ class MatrixWrapper:
 
 
 class LinearRegression(BaseEstimator, ClassifierMixin):
-    def __init__(self, C=0):
+    def __init__(self, C=1):
         self.C = C
 
     def fit(self, X, y=None):
         X_biased = self._transform(X)
-
-        self._weights = matmul(matmul(MatrixWrapper(matmul(X_biased.T, X_biased)).invert(), X_biased.T), y)
+        invertible = matmul(X_biased.T, X_biased) + make_array(np.eye(X_biased.shape[1])) * self.C
+        print('Got invertible')
+        inverted = MatrixWrapper(invertible).invert()
+        print('Inverted')
+        self._weights = matmul(matmul(inverted, X_biased.T), y.reshape(-1, 1))
+        print('Computed weights')
+        print(self._weights[0])
 
     def predict(self, X, y=None):
         X_biased = self._transform(X)
-        return np.matmul(X, self._weights)
+        return matmul(X_biased, self._weights)
 
     def _transform(self, X):
         return np.hstack([X, make_array([1] * X.shape[0]).reshape(-1, 1)])

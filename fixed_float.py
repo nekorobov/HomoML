@@ -11,7 +11,7 @@ def is_builtin(obj):
 
 
 class FixedHomoFloat:
-	def __init__(self, value, k=1, N=2, sec=18, key=None, M=None, max_k=256):
+	def __init__(self, value, k=0, N=2, sec=18, key=None, M=None, max_k=256):
 		if k >= max_k or k < 0:
 			raise ValueError('Incorrect k')
 
@@ -35,7 +35,7 @@ class FixedHomoFloat:
 				M1 = hec.mul(self.M, M1)
 				k1 = self.k * 2
 			else:
-				raise ValueError('Wrong k')
+				raise ValueError('Wrong k: {}'.format(self.k))
 		else:
 			raise TypeError('Unknown type for multiplication')
 		return FixedHomoFloat(0, k=k1, M=M1, key=self.__key)
