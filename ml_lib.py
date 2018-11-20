@@ -84,7 +84,6 @@ class LinearRegression(BaseEstimator, ClassifierMixin):
         print('Inverted')
         self._weights = matmul(matmul(inverted, X_biased.T), y.reshape(-1, 1))
         print('Computed weights')
-        print(self._weights[0])
 
     def predict(self, X, y=None):
         X_biased = self._transform(X)

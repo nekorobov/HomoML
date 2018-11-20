@@ -52,7 +52,6 @@ def poly(coeffs):
     :param coeffs: array of int coeeficients of the polynomial
     :return: lambda function representing this polynomial
     '''
-
     def calc(x):
         '''
         :param x: variable of polynomial
@@ -85,20 +84,6 @@ def rebase_all(numbers, base):
     :return:
     '''
     return [rebase(num, base) for num in numbers]
-
-
-def encrypttolambda(number, key):
-    '''
-    Encrypts a number with a given key to a lambda function.
-
-    :param number: int number to encrypt
-    :param key: secret key of a system
-    :return:lambda function
-    '''
-    rebased = rebase(number, key[2])
-    poly_num = poly(rebased.coef)
-    key_poly = poly(key[0])
-    return lambda x: poly_num(key_poly(x))
 
 
 def encrypttopoly(number, key):

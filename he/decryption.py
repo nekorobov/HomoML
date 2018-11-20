@@ -10,4 +10,5 @@ def decrypt(func, key):
     :param key: keys
     :return: decrypted value
     '''
-    return func(key[2])
+    v = func(key[2])
+    return v
