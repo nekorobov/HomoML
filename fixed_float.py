@@ -11,7 +11,7 @@ def is_builtin(obj):
 
 
 class FixedHomoFloat:
-	def __init__(self, value, k=0, N=2, sec=18, key=None, M=None, max_k=256):
+	def __init__(self, value, k=10, N=2, sec=18, key=None, M=None, max_k=15):
 		if k >= max_k or k < 0:
 			raise ValueError('Incorrect k')
 
@@ -34,8 +34,12 @@ class FixedHomoFloat:
 				M1 = hee.encrypttopoly(int(other * (10 ** self.k)), self.__key)
 				M1 = hec.mul(self.M, M1)
 				k1 = self.k * 2
-			else:
-				raise ValueError('Wrong k: {}'.format(self.k))
+			elif self.k * 2 > self.max_k:
+				M1 = hee.encrypttopoly(int(other * (10 ** self.k)), self.__key)
+				k1 = self.max_k - 1
+				M1 = hec.mul(self.M, M1)
+				C1 = hee.encrypttopoly(int((10 ** (2 * self.k - self.max_k + 1))), self.__key)
+				M1 = hec.div(M1, C1)
 		else:
 			raise TypeError('Unknown type for multiplication')
 		return FixedHomoFloat(0, k=k1, M=M1, key=self.__key)
@@ -45,15 +49,22 @@ class FixedHomoFloat:
 			if self.k + other.k < self.max_k and self.k + other.k >= 0:
 				M1 = hec.mul(self.M, other.M)
 				k1 = self.k + other.k
-			else:
-				raise ValueError('Too big k')
+			elif self.k + other.k > self.max_k:
+				k1 = self.max_k - 1
+				M1 = hec.mul(self.M, other.M)
+				C1 = hee.encrypttopoly(int((10 ** (self.k + other.k - self.max_k + 1))), self.__key)
+				M1 = hec.div(M1, C1)
 		elif is_builtin(other):
 			if self.k * 2 < self.max_k and self.k * 2 >= 0:
 				M1 = hee.encrypttopoly(int(other * (10 ** self.k)), self.__key)
 				M1 = hec.mul(self.M, M1)
 				k1 = self.k * 2
-			else:
-				raise ValueError('Wrong k')
+			elif self.k * 2 > self.max_k:
+				M1 = hee.encrypttopoly(int(other * (10 ** self.k)), self.__key)
+				k1 = self.max_k - 1
+				M1 = hec.mul(self.M, M1)
+				C1 = hee.encrypttopoly(int((10 ** (2 * self.k - self.max_k + 1))), self.__key)
+				M1 = hec.div(M1, C1)
 		else:
 			raise TypeError('Unknown type for multiplication')
 		return FixedHomoFloat(0, k=k1, M=M1, key=self.__key)
@@ -109,8 +120,11 @@ class FixedHomoFloat:
 				if self.k + diff_k < self.max_k and self.k + diff_k >= 0:
 					k1 = self.k + diff_k
 					M1 = hec.add(M1, other.M)
-				else:
-					raise ValueError('Wrong k')
+				elif self.k + diff_k > self.max_k:
+					k1 = self.max_k - 1
+					M1 = hec.add(M1, other.M1)
+					C1 = hee.encrypttopoly(int((10 ** (self.k + diff_k - self.max_k + 1))), self.__key)
+					M1 = hec.div(M1, C1)
 		elif is_builtin(other):
 			M1 = hee.encrypttopoly(int(other * (10 ** self.k)), self.__key)
 			M1 = hec.add(self.M, M1)
@@ -149,8 +163,11 @@ class FixedHomoFloat:
 				if self.k + diff_k < self.max_k and self.k + diff_k >= 0:
 					M1 = hec.sub(M1, other.M)
 					k1 = self.k + diff_k
-				else:
-					raise ValueError('Wrong k')
+				elif self.k + diff_k > self.max_k:
+					k1 = self.max_k - 1
+					M1 = hec.sub(M1, other.M)
+					C1 = hee.encrypttopoly(int((10 ** (self.k + diff_k - self.max_k + 1))), self.__key)
+					M1 = hec.div(M1, C1)
 		elif is_builtin(other):
 			M1 = hee.encrypttopoly(int(other * (10 ** self.k)), self.__key)
 			M1 = hec.sub(self.M, M1)
